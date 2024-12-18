@@ -1,23 +1,17 @@
 package com.example.widget
 
-import android.appwidget.AppWidgetManager
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.RemoteViews
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.widget.databinding.ActivityMainBinding
 import com.example.widget.databinding.ConfigLayoutBinding
-import com.example.widget.databinding.WidgetConfigureBinding
 
 class MainActivity: AppCompatActivity() {
     private val data = Data()
-    private lateinit var bnd: WidgetConfigureBinding
+    private lateinit var bnd: ActivityMainBinding
     private lateinit var mergeBnd: ConfigLayoutBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +24,11 @@ class MainActivity: AppCompatActivity() {
             insets
         }
 
-        bnd = WidgetConfigureBinding.inflate(layoutInflater)
+        bnd = ActivityMainBinding.inflate(layoutInflater)
         mergeBnd = ConfigLayoutBinding.bind(bnd.root)
         setContentView(bnd.root)
 
-        bnd.addButton.setOnClickListener {
+        bnd.updateButton.setOnClickListener {
             setColors()
             val updateIntent = Intent(this, WidgetProvider::class.java).apply {
                 action = ACTION_MANUAL_UPDATE

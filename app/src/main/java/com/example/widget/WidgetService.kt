@@ -3,13 +3,9 @@ package com.example.widget
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.RenderEffect
-import android.graphics.Shader
 import android.util.TypedValue.COMPLEX_UNIT_SP
-import android.widget.ImageView
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
-import androidx.core.view.drawToBitmap
 
 
 const val STATUS_CHANGED = "com.example.widget.STATE_CHANGED"

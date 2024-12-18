@@ -5,7 +5,7 @@
     <string name="select_folder_button">Select Folder</string>
     <string name="add_widget">Add widget</string>
     <string name="set_background">Set Widget Background:</string>
-    <string name="set_textcolor">Set Textcolor:</string>
+    <string name="set_text_color">Set Text color:</string>
     <string name="select_folder">Please select the folder where your note files are stored: *</string>
     <string name="alpha">255</string>
     <string name="alpha_text">Alpha:</string>

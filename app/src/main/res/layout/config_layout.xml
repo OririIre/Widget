@@ -20,6 +20,7 @@
         android:id="@+id/bg_alpha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="125, 180, 255"
         android:hint="@string/alpha"
         android:inputType="number"
         android:layout_marginEnd="10dp"
@@ -34,6 +35,7 @@
         android:id="@+id/bg_red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="0, 125, 255"
         android:hint="@string/color"
         android:inputType="number"
         android:layout_marginEnd="10dp"
@@ -48,6 +50,7 @@
         android:id="@+id/bg_green"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="0, 125, 255"
         android:hint="@string/color"
         android:inputType="number"
         android:layout_marginEnd="10dp"
@@ -62,6 +65,7 @@
         android:id="@+id/bg_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="0, 125, 255"
         android:hint="@string/color"
         android:inputType="number"
         android:layout_marginStart="5dp"/>
@@ -71,7 +75,7 @@
     <TextView
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="@string/set_textcolor"/>
+    android:text="@string/set_text_color"/>
 
     <LinearLayout
     android:layout_width="match_parent"
@@ -87,6 +91,7 @@
         android:id="@+id/text_alpha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="125, 190, 255"
         android:hint="@string/alpha"
         android:inputType="number"
         android:layout_marginEnd="10dp"
@@ -101,6 +106,7 @@
         android:id="@+id/text_red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="0, 125, 255"
         android:hint="@string/color"
         android:inputType="number"
         android:layout_marginEnd="10dp"
@@ -109,12 +115,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/green"/>
+        android:text="@string/green" />
 
-    <EditText
-        android:id="@+id/text_green"
+        <EditText
+            android:id="@+id/text_green"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="0, 125, 255"
         android:hint="@string/color"
         android:inputType="number"
         android:layout_marginEnd="10dp"
@@ -129,6 +136,7 @@
         android:id="@+id/text_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="0, 125, 255"
         android:hint="@string/color"
         android:inputType="number"
         android:layout_marginStart="5dp"/>

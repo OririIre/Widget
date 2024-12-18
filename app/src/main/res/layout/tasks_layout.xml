@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_color"
     android:orientation="vertical"
-    android:id="@+id/widget_background">
+    android:id="@+id/widget_background"
+    tools:ignore="Overdraw">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/fancy_background"/>
+        android:background="@drawable/fancy_background"
+        android:importantForAccessibility="no" />
 
     <ListView
         android:id="@+id/task_list"
@@ -24,6 +27,7 @@
         android:id="@+id/refresh_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
         android:src="@drawable/refresh_icon"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="5dp"
@@ -33,6 +37,7 @@
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        tools:ignore="RelativeOverlap" />
 
 </RelativeLayout>
