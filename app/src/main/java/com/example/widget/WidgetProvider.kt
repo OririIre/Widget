@@ -21,11 +21,16 @@ import android.renderscript.ScriptIntrinsicBlur
 import android.view.View
 import android.widget.ImageView
 import android.widget.RemoteViews
+import androidx.core.net.toUri
 import androidx.core.view.drawToBitmap
+import androidx.documentfile.provider.DocumentFile
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 
 class WidgetProvider : AppWidgetProvider() {
     private val data = Data()
+    private val noteContent = mutableMapOf<String, String>()
 
     override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager?, appWidgetIds: IntArray?) {
 
@@ -36,7 +41,8 @@ class WidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
 
         if (intent?.action == ACTION_MANUAL_UPDATE) {
-            println("refresh")
+            accessFolderContents(context)
+            mergeNotes(context)
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(
                 ComponentName(context!!, WidgetProvider::class.java)
@@ -46,7 +52,6 @@ class WidgetProvider : AppWidgetProvider() {
 
         if (intent?.action == STATUS_CHANGED) {
             if (intent.getIntExtra(CURRENT_STATUS, -1) != -1){
-                println("Checkbox clicked")
                 println("onReceive: ${intent.getIntExtra(CURRENT_STATUS, -1)}")
 ////                val launchIntent = context?.packageManager?.getLaunchIntentForPackage("com.example.obsidian")
 ////                context?.startActivity(launchIntent)
@@ -116,6 +121,39 @@ class WidgetProvider : AppWidgetProvider() {
             appWidgetManager?.notifyAppWidgetViewDataChanged(appWidgetId, R.id.task_list)
             appWidgetManager?.updateAppWidget(appWidgetId, views)
         }
+    }
+
+    private fun accessFolderContents(context: Context?) {
+        val uri = data.load(context, "selected_folder_uri")?.toUri()
+        context ?: return
+        val folder = uri?.let { DocumentFile.fromTreeUri(context, it) }
+        folder?.listFiles()?.forEach { file ->
+
+            // Handle files inside the folder
+            if (file.isFile) {
+                if (file.name?.endsWith(".md") == true) {
+                    val inputStream = context.contentResolver.openInputStream(file.uri)
+                    if (inputStream != null) {
+                        val reader = BufferedReader(InputStreamReader(inputStream))
+                        val content = reader.use { it.readText() } // Read the entire file as a String
+                        noteContent[file.name!!] = content
+                        inputStream.close()
+                    } else {
+                        println("Failed to open InputStream for file: ${file.name}")
+                    }
+                }
+            }
+        }
+    }
+
+    private fun mergeNotes(context: Context?) {
+        val currentOrder = data.load(context, "current_order").toString().removePrefix("[").removeSuffix("]").split(",")
+        var content = ""
+        currentOrder.forEach {
+            content += noteContent[it.trim()]
+            content += "\n\n end \n"
+        }
+        data.save(context, "current_content", content)
     }
 }
 

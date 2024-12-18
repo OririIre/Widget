@@ -28,7 +28,7 @@ class WidgetConfigure : AppCompatActivity() {
     private var selectedFolderUri: Uri? = null
     private val data = Data()
     private lateinit var adapter: TextViewAdapter
-    private val noteContent = mutableMapOf<String, Any?>()
+    private val noteContent = mutableMapOf<String, String>()
     private val context = this@WidgetConfigure
     private lateinit var binding: WidgetConfigureBinding
     private lateinit var mergeBnd: ConfigLayoutBinding
@@ -169,6 +169,7 @@ class WidgetConfigure : AppCompatActivity() {
 
     private fun mergeNotes() {
         val currentOrder = adapter.getItems()
+        data.save(context, "current_order", currentOrder.toString())
         var content = ""
         currentOrder.forEach {
             content += noteContent[it]
