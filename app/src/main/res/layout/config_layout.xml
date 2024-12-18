@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/set_background"/>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alpha_text"/>
+
+    <EditText
+        android:id="@+id/bg_alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/alpha"
+        android:inputType="number"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/red"/>
+
+    <EditText
+        android:id="@+id/bg_red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/color"
+        android:inputType="number"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/green"/>
+
+    <EditText
+        android:id="@+id/bg_green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/color"
+        android:inputType="number"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blue"/>
+
+    <EditText
+        android:id="@+id/bg_blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/color"
+        android:inputType="number"
+        android:layout_marginStart="5dp"/>
+
+    </LinearLayout>
+
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/set_textcolor"/>
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alpha_text"/>
+
+    <EditText
+        android:id="@+id/text_alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/alpha"
+        android:inputType="number"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/red"/>
+
+    <EditText
+        android:id="@+id/text_red"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/color"
+        android:inputType="number"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/green"/>
+
+    <EditText
+        android:id="@+id/text_green"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/color"
+        android:inputType="number"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="5dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/blue"/>
+
+    <EditText
+        android:id="@+id/text_blue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/color"
+        android:inputType="number"
+        android:layout_marginStart="5dp"/>
+
+    </LinearLayout>
+
+</merge>

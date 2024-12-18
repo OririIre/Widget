@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Widget</string>
+    <string name="app_widget_description">Description</string>
+    <string name="configure">Configure Widget</string>
+    <string name="select_folder_button">Select Folder</string>
+    <string name="add_widget">Add widget</string>
+    <string name="set_background">Set Widget Background:</string>
+    <string name="set_textcolor">Set Textcolor:</string>
+    <string name="select_folder">Please select the folder where your note files are stored: *</string>
+    <string name="alpha">255</string>
+    <string name="alpha_text">Alpha:</string>
+    <string name="red">Red:</string>
+    <string name="green">Green:</string>
+    <string name="blue">Blue:</string>
+    <string name="color">255</string>
+    <string name="update_widget">Update Widget</string>
+    <string name="change_note_order">Change Note Order per drag and drop: \n(Swipe left or right to delete not wanted notes)</string>
+    <string name="mandatory">*mandatory selection</string>
+</resources>
