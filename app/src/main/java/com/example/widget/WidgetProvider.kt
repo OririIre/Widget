@@ -84,13 +84,17 @@ class WidgetProvider : AppWidgetProvider() {
         }
 
 
-//        if (intent?.action == WIDGET_CLICKED) {
-//            println("Widget clicked")
-//            val extra = intent.getIntExtra(CURRENT_STATUS, -1)
-//
-//            val launchIntent = context?.packageManager?.getLaunchIntentForPackage("com.example.obsidian")
-//            context?.startActivity(launchIntent)
-//        }
+        if (intent?.action == WIDGET_CLICKED) {
+            try {
+                context?.packageManager?.getPackageInfo("com.example.obsidian", 0)
+                val launchIntent = context?.packageManager?.getLaunchIntentForPackage("com.example.obsidian")
+                context?.startActivity(launchIntent)
+            }
+            catch (nameNotFoundException: Exception)
+            {
+                println("Package not found")
+            }
+        }
 
         super.onReceive(context, intent)
     }

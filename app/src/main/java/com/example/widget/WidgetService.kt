@@ -9,7 +9,7 @@ import android.widget.RemoteViewsService
 
 
 const val STATUS_CHANGED = "com.example.widget.STATE_CHANGED"
-//const val WIDGET_CLICKED = "com.example.widget.WIDGET_CLICKED"
+const val WIDGET_CLICKED = "com.example.widget.WIDGET_CLICKED"
 const val CURRENT_STATUS = "com.example.widget.CURRENT_STATUS"
 const val ACTION_MANUAL_UPDATE = "com.example.widget.ACTION_MANUAL_UPDATE"
 const val DELETE_TASKS = "com.example.widget.DELETE_TASKS"
@@ -62,7 +62,7 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         remoteViews.setTextColor(R.id.task_content, Color.argb(textArgb[0].toInt(), textArgb[1].toInt(), textArgb[2].toInt(), textArgb[3].toInt()))
         remoteViews.setViewVisibility(R.id.checkbox, task["checkbox"] as Int)
         remoteViews.setViewVisibility(R.id.divider, task["end"] as Int)
-        remoteViews.setViewVisibility(R.id.task_content, task["checkbox"] as Int)
+        remoteViews.setViewVisibility(R.id.task_content, task["textview"] as Int)
 
         val fillInIntent = Intent(context, WidgetProvider::class.java).apply {
             action = STATUS_CHANGED
@@ -71,6 +71,13 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         }
 
         remoteViews.setOnClickFillInIntent(R.id.checkbox, fillInIntent)
+
+        val textClickIntent = Intent(context, WidgetProvider::class.java).apply {
+            action = WIDGET_CLICKED
+//            putExtra(WIDGET_CLICKED, position)
+        }
+
+        remoteViews.setOnClickFillInIntent(R.id.task_content, textClickIntent)
 
         return remoteViews
     }
@@ -107,51 +114,47 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         for (line in lines){
             if (line != "")
             {
-                val map = mutableMapOf<String, Any?>()
+                var map = mutableMapOf<String, Any?>()
                 if (line.contains("- [ ]")) {
                     // Unchecked Checkbox
-                    map["text"] = line.removePrefix("- [ ]")
-                    map["checkbox"] = 0
-                    map["checked"] = false
-                    map["heading"] = 14f
-                    map["end"] = 8
+                    val content = line.removePrefix("- [ ]")
+                    map = setMap(content, 0, false, 14f, 8, 0)
                 }
                 else if (line.contains("- [x]")) {
                     // Checked Checkbox
-                    map["text"] = line.removePrefix("- [x]")
-                    map["checkbox"] = 0
-                    map["checked"] = true
-                    map["heading"] = 14f
-                    map["end"] = 8
+                    val content = line.removePrefix("- [x]")
+                    map = setMap(content, 0, true, 14f, 8, 0)
                 }
                 else if (line.startsWith("#") or line.startsWith("##") or line.startsWith("###")) {
                     // Heading
-                    map["text"] = line.removePrefix("#").removePrefix("##").removePrefix("###")
-                    map["checkbox"] = 8
-                    map["checked"] = false
-                    map["heading"] = 18f
-                    map["end"] = 8
+                    val content = line.removePrefix("#").removePrefix("##").removePrefix("###")
+                    map = setMap(content, 8, false, 18f, 8, 0)
                 }
-                else if (line.contains("end")) {
+                else if (line.trim() == "end") {
                     // End of note
-                    map["text"] = ""
-                    map["checkbox"] = 8
-                    map["checked"] = false
-                    map["heading"] = 14f
-                    map["end"] = 0
+                    map = setMap("", 8, false, 14f, 0, 8)
                 }
                 else {
                     // Add a TextView for text content
-                    map["text"] = line
-                    map["checkbox"] = 8
-                    map["checked"] = false
-                    map["heading"] = 14f
-                    map["end"] = 8
+                    map = setMap(line, 8, false, 14f, 8, 0)
                 }
                 list += map
             }
         }
         return list
+    }
+
+    private fun setMap(content: String, checkbox: Int, checked: Boolean, heading: Float, end: Int, textview: Int): MutableMap<String, Any?>
+    {
+        val map = mutableMapOf<String, Any?>()
+        map["text"] = content
+        map["checkbox"] = checkbox
+        map["checked"] = checked
+        map["heading"] = heading
+        map["end"] = end
+        map["textview"] = textview
+
+        return map
     }
 
 
