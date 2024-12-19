@@ -86,8 +86,8 @@ class WidgetProvider : AppWidgetProvider() {
 
         if (intent?.action == WIDGET_CLICKED) {
             try {
-                context?.packageManager?.getPackageInfo("com.example.obsidian", 0)
-                val launchIntent = context?.packageManager?.getLaunchIntentForPackage("com.example.obsidian")
+                context?.packageManager?.getPackageInfo("md.obsidian", 0)
+                val launchIntent = context?.packageManager?.getLaunchIntentForPackage("md.obsidian")
                 context?.startActivity(launchIntent)
             }
             catch (nameNotFoundException: Exception)
