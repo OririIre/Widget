@@ -28,8 +28,7 @@
 <!--        android:layout_marginTop="8dp"-->
 <!--        android:text="@string/select_folder_button" />-->
 
-    <include layout="@layout/config_layout"
-        android:id="@+id/conf"/>
+    <include layout="@layout/config_layout"/>
 
     <Button
         android:id="@+id/update_button"

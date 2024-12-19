@@ -10,14 +10,11 @@ import android.graphics.Color
 import android.net.Uri
 import android.widget.RemoteViews
 import androidx.core.net.toUri
-import androidx.documentfile.provider.DocumentFile
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 
 class WidgetProvider : AppWidgetProvider() {
     private val data = Data()
-    private val noteContent = mutableMapOf<String, String>()
+    private var fileContent = mutableMapOf<String, String>()
 
     override fun onUpdate(context: Context?, appWidgetManager: AppWidgetManager?, appWidgetIds: IntArray?) {
 
@@ -27,9 +24,14 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
+        //MANUAL UPDATE FUNCTION
         if (intent?.action == ACTION_MANUAL_UPDATE) {
-            accessFolderContents(context)
-            mergeNotes(context)
+            val uri = data.load(context, "selected_folder_uri")?.toUri()
+            if (uri != null)
+            {
+                fileContent = data.getFileContents(context!!, uri)
+                mergeNotes(context)
+            }
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val appWidgetIds = appWidgetManager.getAppWidgetIds(
                 ComponentName(context!!, WidgetProvider::class.java)
@@ -37,19 +39,58 @@ class WidgetProvider : AppWidgetProvider() {
             updateWidget(context, appWidgetManager, appWidgetIds)
         }
 
+        //CHECKBOX STATUS CHANGE FUNCTION
         if (intent?.action == STATUS_CHANGED) {
-            if (intent.getIntExtra(CURRENT_STATUS, -1) != -1){
-                println("onReceive: ${intent.getIntExtra(CURRENT_STATUS, -1)}")
-////                val launchIntent = context?.packageManager?.getLaunchIntentForPackage("com.example.obsidian")
-////                context?.startActivity(launchIntent)
+            if (intent.getStringExtra(CURRENT_STATUS) != ""){
+                val uri = data.load(context, "selected_folder_uri")?.toUri()
+                if(uri != null && context != null)
+                {
+                    fileContent = data.getFileContents(context, uri)
+                }
+                val task = intent.getStringExtra(CURRENT_STATUS)
+                val fileName = setCheckbox(context, task.toString().trim())
+                if(uri != null && context != null && fileName != "")
+                {
+                    data.writeFile(context, uri, fileName, fileContent[fileName].toString())
+                }
+                if (uri != null)
+                {
+                    mergeNotes(context)
+                }
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                val appWidgetIds = appWidgetManager.getAppWidgetIds(
+                    ComponentName(context!!, WidgetProvider::class.java)
+                )
+                updateWidget(context, appWidgetManager, appWidgetIds)
+
             }
         }
 
-        if (intent?.action == WIDGET_CLICKED) {
-            println("Widget clicked")
-            val extra = intent.getIntExtra(CURRENT_STATUS, -1)
-            println("onReceive: $extra")
+        // DELETE FUNCTION
+        if (intent?.action == DELETE_TASKS) {
+            val uri = data.load(context, "selected_folder_uri")?.toUri()
+            if(uri != null && context != null)
+            {
+                fileContent = data.getFileContents(context, uri)
+                deleteCheckedTasks(context, uri)
+                mergeNotes(context)
+            }
+
+            val appWidgetManager = AppWidgetManager.getInstance(context)
+            val appWidgetIds = appWidgetManager.getAppWidgetIds(
+                ComponentName(context!!, WidgetProvider::class.java)
+            )
+            updateWidget(context, appWidgetManager, appWidgetIds)
         }
+
+
+//        if (intent?.action == WIDGET_CLICKED) {
+//            println("Widget clicked")
+//            val extra = intent.getIntExtra(CURRENT_STATUS, -1)
+//
+//            val launchIntent = context?.packageManager?.getLaunchIntentForPackage("com.example.obsidian")
+//            context?.startActivity(launchIntent)
+//        }
 
         super.onReceive(context, intent)
     }
@@ -69,7 +110,6 @@ class WidgetProvider : AppWidgetProvider() {
             backgroundArgb += "0"
         }
         appWidgetIds?.forEach { appWidgetId ->
-
             val intent = Intent(context, WidgetService::class.java).apply {
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
                 data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
@@ -89,13 +129,26 @@ class WidgetProvider : AppWidgetProvider() {
                 PendingIntent.FLAG_MUTABLE
             )
 
+            val deleteIntent = Intent(context, WidgetProvider::class.java).apply {
+                action = DELETE_TASKS
+            }
+
+            val deletePendingIntent = PendingIntent.getBroadcast(
+                context,
+                1,
+                deleteIntent,
+                PendingIntent.FLAG_MUTABLE
+            )
+
+            views.setOnClickPendingIntent(R.id.delete_button, deletePendingIntent)
+
             val refreshIntent = Intent(context, WidgetProvider::class.java).apply {
                 action = ACTION_MANUAL_UPDATE
             }
 
             val refreshPendingIntent = PendingIntent.getBroadcast(
                 context,
-                0,
+                2,
                 refreshIntent,
                 PendingIntent.FLAG_MUTABLE
             )
@@ -110,37 +163,66 @@ class WidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private fun accessFolderContents(context: Context?) {
-        val uri = data.load(context, "selected_folder_uri")?.toUri()
-        context ?: return
-        val folder = uri?.let { DocumentFile.fromTreeUri(context, it) }
-        folder?.listFiles()?.forEach { file ->
-
-            // Handle files inside the folder
-            if (file.isFile) {
-                if (file.name?.endsWith(".md") == true) {
-                    val inputStream = context.contentResolver.openInputStream(file.uri)
-                    if (inputStream != null) {
-                        val reader = BufferedReader(InputStreamReader(inputStream))
-                        val content = reader.use { it.readText() } // Read the entire file as a String
-                        noteContent[file.name!!] = content
-                        inputStream.close()
-                    } else {
-                        println("Failed to open InputStream for file: ${file.name}")
-                    }
-                }
-            }
-        }
-    }
-
     private fun mergeNotes(context: Context?) {
         val currentOrder = data.load(context, "current_order").toString().removePrefix("[").removeSuffix("]").split(",")
         var content = ""
         currentOrder.forEach {
-            content += noteContent[it.trim()]
-            content += "\n\n end \n"
+            content += "#" + it.trim() + "\n"
+            content += fileContent[it.trim()]
+            content += "\nend \n"
         }
         data.save(context, "current_content", content)
+    }
+
+    private fun setCheckbox(context: Context?, task: String): String
+    {
+        var fileName = ""
+        val currentOrder = data.load(context, "current_order").toString().removePrefix("[").removeSuffix("]").split(",")
+        currentOrder.forEach {
+            var newContent = ""
+            val lines = fileContent[it.trim()].toString().split("\n")
+            for (line in lines)
+            {
+                when (line) {
+                    ("- [ ] $task") -> {
+                        newContent += line.replace("- [ ] $task", "- [x] $task") + "\n"
+                        fileName = it.trim()
+                    }
+                    ("- [x] $task") -> {
+                        newContent += line.replace("- [x] $task", "- [ ] $task") + "\n"
+                        fileName = it.trim()
+                    }
+                    else -> {
+                        newContent += line + "\n"
+                    }
+                }
+            }
+            fileContent[it.trim()] = newContent
+        }
+        return fileName
+    }
+
+    private fun deleteCheckedTasks(context: Context?, uri: Uri)
+    {
+        val currentOrder = data.load(context, "current_order").toString().removePrefix("[").removeSuffix("]").split(",")
+        currentOrder.forEach {
+            if (fileContent[it.trim()].toString().contains("- [x]")) {
+                var newContent = ""
+                val lines = fileContent[it.trim()].toString().split("\n")
+                for (i in lines.indices)
+                {
+                    if (!lines[i].contains("- [x]") && lines[i] != "")
+                    {
+                        newContent += lines[i] + "\n"
+                    }
+                }
+                fileContent[it.trim()] = newContent
+                if(context != null)
+                {
+                    data.writeFile(context, uri, it.trim(), fileContent[it.trim()].toString())
+                }
+            }
+        }
     }
 }
 

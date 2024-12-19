@@ -9,9 +9,10 @@ import android.widget.RemoteViewsService
 
 
 const val STATUS_CHANGED = "com.example.widget.STATE_CHANGED"
-const val WIDGET_CLICKED = "com.example.widget.WIDGET_CLICKED"
+//const val WIDGET_CLICKED = "com.example.widget.WIDGET_CLICKED"
 const val CURRENT_STATUS = "com.example.widget.CURRENT_STATUS"
 const val ACTION_MANUAL_UPDATE = "com.example.widget.ACTION_MANUAL_UPDATE"
+const val DELETE_TASKS = "com.example.widget.DELETE_TASKS"
 
 class WidgetService : RemoteViewsService() {
     override fun onGetViewFactory(intent: Intent?): RemoteViewsFactory {
@@ -61,10 +62,12 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         remoteViews.setTextColor(R.id.task_content, Color.argb(textArgb[0].toInt(), textArgb[1].toInt(), textArgb[2].toInt(), textArgb[3].toInt()))
         remoteViews.setViewVisibility(R.id.checkbox, task["checkbox"] as Int)
         remoteViews.setViewVisibility(R.id.divider, task["end"] as Int)
+        remoteViews.setViewVisibility(R.id.task_content, task["checkbox"] as Int)
 
         val fillInIntent = Intent(context, WidgetProvider::class.java).apply {
             action = STATUS_CHANGED
-            putExtra(CURRENT_STATUS, position)
+//            putExtra(CURRENT_STATUS, position)
+            putExtra(CURRENT_STATUS, task["text"] as String)
         }
 
         remoteViews.setOnClickFillInIntent(R.id.checkbox, fillInIntent)

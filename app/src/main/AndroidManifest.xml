@@ -38,6 +38,7 @@
                 <action android:name="com.example.widget.STATE_CHANGED" />
                 <action android:name="com.example.widget.ACTION_MANUAL_UPDATE" />
                 <action android:name="com.example.widget.WIDGET_CLICKED" />
+                <action android:name="com.example.widget.DELETE_TASKS" />
             </intent-filter>
 
             <meta-data

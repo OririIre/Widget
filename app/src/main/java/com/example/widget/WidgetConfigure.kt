@@ -8,14 +8,11 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.widget.databinding.ConfigLayoutBinding
 import com.example.widget.databinding.WidgetConfigureBinding
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 /**
  * The configuration screen for the [WidgetProvider] AppWidget.
@@ -26,7 +23,7 @@ class WidgetConfigure : AppCompatActivity() {
     private var selectedFolderUri: Uri? = null
     private val data = Data()
     private lateinit var adapter: TextViewAdapter
-    private val noteContent = mutableMapOf<String, String>()
+    private var fileContent = mutableMapOf<String, String>()
     private val context = this@WidgetConfigure
     private lateinit var binding: WidgetConfigureBinding
     private lateinit var mergeBnd: ConfigLayoutBinding
@@ -41,14 +38,15 @@ class WidgetConfigure : AppCompatActivity() {
                     it,
                     Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 )
-                accessFolderContents(it)
+                fileContent = data.getFileContents(context ,it)
+                addLayouts()
                 selectedFolderUri = it
                 data.save(context, "selected_folder_uri", it.toString())
             }
         }
     }
     private var onClickListener = View.OnClickListener {
-        if(noteContent.isNotEmpty()) {
+        if(fileContent.isNotEmpty()) {
             setColors()
             mergeNotes()
         }
@@ -126,32 +124,10 @@ class WidgetConfigure : AppCompatActivity() {
         }
     }
 
-    private fun accessFolderContents(uri: Uri) {
-        val folder = DocumentFile.fromTreeUri(this, uri)
-        folder?.listFiles()?.forEach { file ->
-
-            // Handle files inside the folder
-            if (file.isFile) {
-                if (file.name?.endsWith(".md") == true) {
-                    val inputStream = contentResolver.openInputStream(file.uri)
-                    if (inputStream != null) {
-                        val reader = BufferedReader(InputStreamReader(inputStream))
-                        val content = reader.use { it.readText() } // Read the entire file as a String
-                        noteContent[file.name!!] = content
-                        inputStream.close()
-                    } else {
-                        println("Failed to open InputStream for file: ${file.name}")
-                    }
-                }
-            }
-        }
-        addLayouts()
-    }
-
     private fun addLayouts()
     {
         val items = mutableListOf<String>()
-        noteContent.forEach { (fileName, content) ->
+        fileContent.forEach { (fileName, _) ->
             items += fileName
         }
 
@@ -170,8 +146,9 @@ class WidgetConfigure : AppCompatActivity() {
         data.save(context, "current_order", currentOrder.toString())
         var content = ""
         currentOrder.forEach {
-            content += noteContent[it]
-            content += "\n\n end \n"
+            content += "#" + it.trim() + "\n"
+            content += fileContent[it]
+            content += "\nend \n"
         }
         data.save(context, "current_content", content)
     }

@@ -29,6 +29,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/dark_grey"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:visibility="gone"/>
