@@ -2,6 +2,7 @@ package com.example.widget
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.util.TypedValue.COMPLEX_UNIT_SP
 import android.widget.RemoteViews
@@ -55,7 +56,9 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
     override fun getViewAt(position: Int): RemoteViews {
         val remoteViews = RemoteViews(context.packageName, R.layout.single_task_layout)
         val task = tasks[position]
+        val csl = ColorStateList.valueOf(Color.argb(textArgb[0].toInt(), textArgb[1].toInt(), textArgb[2].toInt(), textArgb[3].toInt()))
 
+        remoteViews.setColorStateList(R.id.checkbox, "setButtonTintList", csl, csl)
         remoteViews.setCompoundButtonChecked(R.id.checkbox, task["checked"] as Boolean)
         remoteViews.setTextViewText(R.id.task_content, task["text"] as String)
         remoteViews.setTextViewTextSize(R.id.task_content, COMPLEX_UNIT_SP, task["heading"] as Float)
@@ -66,7 +69,6 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
 
         val fillInIntent = Intent(context, WidgetProvider::class.java).apply {
             action = STATUS_CHANGED
-//            putExtra(CURRENT_STATUS, position)
             putExtra(CURRENT_STATUS, task["text"] as String)
         }
 
@@ -74,7 +76,6 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
 
         val textClickIntent = Intent(context, WidgetProvider::class.java).apply {
             action = WIDGET_CLICKED
-//            putExtra(WIDGET_CLICKED, position)
         }
 
         remoteViews.setOnClickFillInIntent(R.id.task_content, textClickIntent)
