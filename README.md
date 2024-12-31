@@ -52,6 +52,8 @@ ToDos:
 - Implement different colors for text and checkbox
 - Support multiple widgets
 - Implement customizable font size
+- Implement other markdown syntax
+- Add comments
 
 
 
