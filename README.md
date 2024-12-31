@@ -35,6 +35,8 @@ The value for the text&checkbox is if not changed A:80 R:255 G:255 B:255
 
 You can also change the colors later if you open the "Notes app" (app of the widget).
 
+Then press the Add Widget Button!
+
 ![Screenshot 2024-12-31 135003](https://github.com/user-attachments/assets/8b9aa139-c145-4579-9f26-97282a9fec59)
 
 As this is not and official widget from Obsidian or any other markdown note app, you have to refresh the widget, with the refresh button on the top right side, after changing something in the selected App.
