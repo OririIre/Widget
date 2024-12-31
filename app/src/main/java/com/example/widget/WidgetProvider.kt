@@ -42,13 +42,14 @@ class WidgetProvider : AppWidgetProvider() {
         //CHECKBOX STATUS CHANGE FUNCTION
         if (intent?.action == STATUS_CHANGED) {
             if (intent.getStringExtra(CURRENT_STATUS) != ""){
+                println("Intent String of pressed checkbox: ${intent.getStringExtra(CURRENT_STATUS)}")
                 val uri = data.load(context, "selected_folder_uri")?.toUri()
                 if(uri != null && context != null)
                 {
                     fileContent = data.getFileContents(context, uri)
                 }
                 val task = intent.getStringExtra(CURRENT_STATUS)
-                val fileName = setCheckbox(context, task.toString().trim())
+                val fileName = setCheckbox(task.toString().trim())
                 if(uri != null && context != null && fileName != "")
                 {
                     data.writeFile(context, uri, fileName, fileContent[fileName].toString())
@@ -171,38 +172,38 @@ class WidgetProvider : AppWidgetProvider() {
         val currentOrder = data.load(context, "current_order").toString().removePrefix("[").removeSuffix("]").split(",")
         var content = ""
         currentOrder.forEach {
-            content += "#" + it.trim() + "\n"
+            content += "#fileName:" + it.trim() + "\n"
             content += fileContent[it.trim()]
             content += "\nend \n"
         }
         data.save(context, "current_content", content)
     }
 
-    private fun setCheckbox(context: Context?, task: String): String
+    private fun setCheckbox(taskAndFile: String): String
     {
-        var fileName = ""
-        val currentOrder = data.load(context, "current_order").toString().removePrefix("[").removeSuffix("]").split(",")
-        currentOrder.forEach {
+        val splitstring = taskAndFile.split("#fileName:")
+        val fileName = splitstring[1]
+        val task = splitstring[0]
             var newContent = ""
-            val lines = fileContent[it.trim()].toString().split("\n")
-            for (line in lines)
-            {
-                when (line) {
+            val lines = fileContent[fileName]?.split("\n")
+        if (lines != null) {
+            for (line in lines) {
+                newContent += when (line) {
                     ("- [ ] $task") -> {
-                        newContent += line.replace("- [ ] $task", "- [x] $task") + "\n"
-                        fileName = it.trim()
+                        line.replace("- [ ] $task", "- [x] $task") + "\n"
                     }
+
                     ("- [x] $task") -> {
-                        newContent += line.replace("- [x] $task", "- [ ] $task") + "\n"
-                        fileName = it.trim()
+                        line.replace("- [x] $task", "- [ ] $task") + "\n"
                     }
+
                     else -> {
-                        newContent += line + "\n"
+                        line + "\n"
                     }
                 }
             }
-            fileContent[it.trim()] = newContent
         }
+            fileContent[fileName] = newContent
         return fileName
     }
 

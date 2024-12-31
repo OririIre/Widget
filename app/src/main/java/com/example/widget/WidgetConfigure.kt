@@ -146,7 +146,7 @@ class WidgetConfigure : AppCompatActivity() {
         data.save(context, "current_order", currentOrder.toString())
         var content = ""
         currentOrder.forEach {
-            content += "#" + it.trim() + "\n"
+            content += "#fileName:" + it.trim() + "\n"
             content += fileContent[it]
             content += "\nend \n"
         }

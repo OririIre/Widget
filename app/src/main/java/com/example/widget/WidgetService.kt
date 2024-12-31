@@ -67,9 +67,11 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         remoteViews.setViewVisibility(R.id.divider, task["end"] as Int)
         remoteViews.setViewVisibility(R.id.task_content, task["textview"] as Int)
 
+        val extra = task["text"] as String + task["filename"] as String
+
         val fillInIntent = Intent(context, WidgetProvider::class.java).apply {
             action = STATUS_CHANGED
-            putExtra(CURRENT_STATUS, task["text"] as String)
+            putExtra(CURRENT_STATUS, extra)
         }
 
         remoteViews.setOnClickFillInIntent(R.id.checkbox, fillInIntent)
@@ -112,32 +114,43 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
     private fun parseContent(lines: List<String>): MutableList<MutableMap<String, Any?>>
     {
         val list = mutableListOf<MutableMap<String, Any?>>()
+        var newsuffix = ""
+        var task: String
         for (line in lines){
             if (line != "")
             {
+                if (line.contains("#fileName:"))
+                {
+                    task = line.replace("fileName:", "")
+                    newsuffix = line
+                }
+                else
+                {
+                    task = line
+                }
                 var map = mutableMapOf<String, Any?>()
-                if (line.contains("- [ ]")) {
+                if (task.contains("- [ ]")) {
                     // Unchecked Checkbox
-                    val content = line.removePrefix("- [ ]")
-                    map = setMap(content, 0, false, 14f, 8, 0)
+                    val content = task.removePrefix("- [ ]")
+                    map = setMap(content, 0, false, 14f, 8, 0, newsuffix)
                 }
-                else if (line.contains("- [x]")) {
+                else if (task.contains("- [x]")) {
                     // Checked Checkbox
-                    val content = line.removePrefix("- [x]")
-                    map = setMap(content, 0, true, 14f, 8, 0)
+                    val content = task.removePrefix("- [x]")
+                    map = setMap(content, 0, true, 14f, 8, 0, newsuffix)
                 }
-                else if (line.startsWith("#") or line.startsWith("##") or line.startsWith("###")) {
+                else if (task.startsWith("#") or task.startsWith("##") or task.startsWith("###")) {
                     // Heading
-                    val content = line.removePrefix("#").removePrefix("##").removePrefix("###")
-                    map = setMap(content, 8, false, 18f, 8, 0)
+                    val content = task.removePrefix("#").removePrefix("##").removePrefix("###")
+                    map = setMap(content, 8, false, 18f, 8, 0, newsuffix)
                 }
-                else if (line.trim() == "end") {
+                else if (task.trim() == "end") {
                     // End of note
-                    map = setMap("", 8, false, 14f, 0, 8)
+                    map = setMap("", 8, false, 14f, 0, 8, newsuffix)
                 }
                 else {
                     // Add a TextView for text content
-                    map = setMap(line, 8, false, 14f, 8, 0)
+                    map = setMap(task, 8, false, 14f, 8, 0, newsuffix)
                 }
                 list += map
             }
@@ -145,7 +158,7 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         return list
     }
 
-    private fun setMap(content: String, checkbox: Int, checked: Boolean, heading: Float, end: Int, textview: Int): MutableMap<String, Any?>
+    private fun setMap(content: String, checkbox: Int, checked: Boolean, heading: Float, end: Int, textview: Int, suffix: String): MutableMap<String, Any?>
     {
         val map = mutableMapOf<String, Any?>()
         map["text"] = content
@@ -154,6 +167,7 @@ class WidgetRemoteViewsFactory(private val context: Context) : RemoteViewsServic
         map["heading"] = heading
         map["end"] = end
         map["textview"] = textview
+        map["filename"] = suffix
 
         return map
     }
