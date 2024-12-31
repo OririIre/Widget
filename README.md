@@ -19,6 +19,7 @@ How to use:
 
 Add it like any widget from the homescreen.
 Then the config screen as shown will appear:
+
 ![Screenshot 2024-12-31 134840](https://github.com/user-attachments/assets/d44e9a3e-b8e7-4469-bf08-7d2bf08d16b3)
 
 Here you have to select the path to the markdown files. In my case the Obsidian Vault I want to show:
